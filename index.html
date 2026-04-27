@@ -454,30 +454,39 @@ document.getElementById('cal-sync-btn').addEventListener('click',async()=>{
   try {
     const meRes=await fetch('https://api.calendly.com/users/me',{headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'}});
     if(!meRes.ok){const e=await meRes.json();throw new Error(e.message||'Auth failed');}
-    const me=await meRes.json();const userUri=me.resource.uri;
+    const me=await meRes.json();
+    const userUri=me.resource.uri;
     logEl.textContent+='Connected as '+me.resource.name+'\n';statusEl.textContent='Fetching events...';
     const since=new Date(Date.now()-30*24*60*60*1000).toISOString();
     const evRes=await fetch(`https://api.calendly.com/scheduled_events?user=${encodeURIComponent(userUri)}&count=100&min_start_time=${since}&status=active`,{headers:{Authorization:'Bearer '+token}});
     if(!evRes.ok)throw new Error('Failed to fetch events');
-    const evData=await evRes.json();const events=evData.collection||[];
+    const evData=await evRes.json();
+    const events=evData.collection||[];
     logEl.textContent+=`Found ${events.length} events in last 30 days\n`;
     let added=0,skipped=0;
     for(const ev of events){
-      const invRes=await fetch(`https://api.calendly.com/scheduled_events/${ev.uri.split('/').pop()}/invitees?count=100`,{headers:{Authorization:'Bearer '+token}});
-      if(!invRes.ok)continue;
-      const invData=await invRes.json();
-      for(const inv of(invData.collection||[])){
-        const email=inv.email||'';const name=inv.name||email||'Unknown';
-        const exists=STATE.candidates.find(c=>c.email&&c.email.toLowerCase()===email.toLowerCase());
-        if(exists){logEl.textContent+=`Skipped (exists): ${name}\n`;skipped++;continue;}
-        const evName=ev.name||'Meeting';const eventDate=ev.start_time?ev.start_time.slice(0,10):new Date().toISOString().slice(0,10);
-        STATE.candidates.push({id:uid(),name,email,role:'',client:'',linkedin:'',stage:defaultStage,priority:'warm',notes:`Booked: ${evName} on ${eventDate}`,currentComp:0,targetComp:0,offerComp:0,feePct:20,fee:0,feeStatus:'projected',fromCal:true,date:eventDate,activity:[{ts:eventDate,text:`Auto-imported from Calendly — ${evName}`}]});
-        logEl.textContent+=`Added: ${name} (${email})\n`;added++;
+      try{
+        const evId=ev.uri.split('/').pop();
+        const invRes=await fetch(`https://api.calendly.com/scheduled_events/${evId}/invitees?count=100`,{headers:{Authorization:'Bearer '+token}});
+        if(!invRes.ok)continue;
+        const invData=await invRes.json();
+        for(const inv of(invData.collection||[])){
+          const email=inv.email||'';const name=inv.name||email||'Unknown';
+          if(!email)continue;
+          const exists=STATE.candidates.find(c=>c.email&&c.email.toLowerCase()===email.toLowerCase());
+          if(exists){logEl.textContent+=`Skipped (exists): ${name}\n`;skipped++;continue;}
+          const evName=ev.name||'Meeting';
+          const eventDate=ev.start_time?ev.start_time.split('T')[0]:new Date().toISOString().slice(0,10);
+          STATE.candidates.push({id:uid(),name,email,role:'',client:'',linkedin:'',stage:defaultStage,priority:'warm',notes:`Booked: ${evName} on ${eventDate}`,currentComp:0,targetComp:0,offerComp:0,feePct:20,fee:0,feeStatus:'projected',fromCal:true,date:eventDate,activity:[{ts:eventDate,text:`Auto-imported from Calendly — ${evName}`}]});
+          logEl.textContent+=`Added: ${name} (${email})\n`;added++;
+        }
+      }catch(invErr){
+        logEl.textContent+=`Error processing event: ${invErr.message}\n`;
       }
     }
     save();renderFilterSelect();renderBoard();
-    statusEl.textContent=`Done — ${added} added, ${skipped} skipped`;
-  } catch(err){statusEl.textContent='Error: '+err.message;logEl.textContent+='\nFailed: '+err.message;}
+    statusEl.textContent=`✓ Done — ${added} added, ${skipped} skipped`;
+  } catch(err){statusEl.textContent='✗ Error: '+err.message;logEl.textContent+='\nFailed: '+err.message;}
   btn.textContent='Sync now';btn.disabled=false;
 });
 
