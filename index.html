@@ -72,6 +72,7 @@
   .tag-hot { background: #FCEBEB; color: #A32D2D; }
   .tag-warm { background: #FAEEDA; color: #854F0B; }
   .tag-cold { background: var(--bg-secondary); color: var(--text-secondary); }
+  .tag-rejected { background: #F5E8E8; color: #8B4444; }
   .tag-cal { background: #EAF3DE; color: #3B6D11; font-size: 9px; }
   .card-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 6px; }
   .card-fee { font-size: 10px; font-weight: 500; color: var(--text-secondary); }
@@ -117,9 +118,15 @@
   .ctx-item:hover { background: var(--bg-secondary); }
   .ctx-item.danger { color: #A32D2D; }
 
-  /* Calendly modal extras */
+  /* Clients modal extras */
   #cal-log { font-size: 11px; color: var(--text-secondary); background: var(--bg-secondary); border-radius: var(--radius-md); padding: 8px; min-height: 40px; max-height: 120px; overflow-y: auto; margin-bottom: 10px; display: none; white-space: pre-wrap; font-family: monospace; }
   #sync-status { font-size: 11px; color: var(--text-secondary); margin-bottom: 8px; min-height: 16px; }
+  
+  .clients-list { display: flex; flex-direction: column; gap: 6px; max-height: 200px; overflow-y: auto; margin-bottom: 12px; }
+  .client-item { display: flex; align-items: center; justify-content: space-between; padding: 8px 10px; background: var(--bg-secondary); border-radius: var(--radius-md); border: 0.5px solid var(--border-light); }
+  .client-item-name { font-size: 12px; font-weight: 500; color: var(--text-primary); }
+  .client-item-btn { padding: 4px 8px; font-size: 11px; border: 0.5px solid var(--border-mid); border-radius: 4px; background: none; cursor: pointer; color: #A32D2D; }
+  .client-item-btn:hover { background: var(--bg-tertiary); }
 </style>
 </head>
 <body>
@@ -129,6 +136,7 @@
   <input id="search-input" placeholder="Search candidates..." type="text" />
   <select id="filter-client"><option value="">All clients</option></select>
   <button class="tb-btn" id="add-btn">+ Add</button>
+  <button class="tb-btn" id="clients-btn">👥 Clients</button>
   <button class="tb-btn accent" id="cal-btn">↻ Calendly</button>
   <button class="tb-btn" id="export-btn">↓ CSV</button>
 </div>
@@ -206,6 +214,23 @@
   </div>
 </div>
 
+<!-- Clients modal -->
+<div class="overlay" id="clients-modal-overlay">
+  <div class="modal" style="width:360px">
+    <h3>Manage clients</h3>
+    <div class="field"><label>Add new client</label>
+      <div style="display:flex;gap:6px;">
+        <input id="new-client-input" placeholder="Client name" />
+        <button class="btn-save" id="add-client-btn" style="flex-shrink:0">Add</button>
+      </div>
+    </div>
+    <div class="clients-list" id="clients-list"></div>
+    <div class="modal-btns">
+      <button class="btn-cancel" id="clients-cancel">Done</button>
+    </div>
+  </div>
+</div>
+
 <!-- Calendly modal -->
 <div class="overlay" id="cal-modal-overlay">
   <div class="modal" style="width:360px">
@@ -246,6 +271,7 @@ const STAGES=[
   {id:'interview',label:'Interviewing',color:'#AFA9EC'},
   {id:'offer',label:'Offer',color:'#F0997B'},
   {id:'placed',label:'Placed',color:'#1D9E75'},
+  {id:'rejected',label:'Rejected',color:'#8B4444'},
 ];
 
 const SEED=[
@@ -256,21 +282,21 @@ const SEED=[
   {id:'c5',name:'Nadia Flores',role:'Product Engineer',client:'Runlayer',email:'',linkedin:'',stage:'offer',priority:'hot',notes:'Offer out. $195k + equity.',currentComp:170000,targetComp:195000,offerComp:195000,feePct:20,fee:39000,feeStatus:'projected',fromCal:false,date:'2025-04-07',activity:[{ts:'2025-04-07',text:'Offer extended: $195k'}]},
 ];
 
-let STATE={candidates:[]};
+let STATE={candidates:[],clients:[]};
 let dragId=null,editId=null,ctxId=null,searchVal='',filterClient='';
 
-function load(){try{const r=localStorage.getItem('ats_full_v1');if(r)STATE=JSON.parse(r);else STATE.candidates=SEED;}catch{STATE.candidates=SEED;}}
+function load(){try{const r=localStorage.getItem('ats_full_v1');if(r)STATE=JSON.parse(r);else{STATE.candidates=SEED;STATE.clients=[];}}catch{STATE.candidates=SEED;STATE.clients=[];}}
 function save(){try{localStorage.setItem('ats_full_v1',JSON.stringify(STATE));}catch{}}
 function uid(){return 'c'+Date.now()+Math.random().toString(36).slice(2,5);}
 function initials(n){return(n||'?').split(' ').map(p=>p[0]||'').join('').slice(0,2).toUpperCase();}
 function fmt(d){if(!d)return'';const dt=new Date(d);return(dt.getMonth()+1)+'/'+dt.getDate();}
 function fmtMoney(v){if(!v||isNaN(v))return'';return'$'+Math.round(v).toLocaleString();}
 function calcFee(c){if(c.fee&&c.fee>0)return c.fee;const base=c.offerComp||c.targetComp||0;const pct=(c.feePct||20)/100;return Math.round(base*pct);}
-function getClients(){return[...new Set(STATE.candidates.map(c=>c.client).filter(Boolean))].sort();}
+function getClients(){const from_data=[...new Set(STATE.candidates.map(c=>c.client).filter(Boolean))];const all=[...new Set([...from_data,...(STATE.clients||[])])];return all.sort();}
 
 function updateSummary(){
   const all=STATE.candidates;
-  const active=all.filter(c=>c.stage!=='placed');
+  const active=all.filter(c=>c.stage!=='placed'&&c.stage!=='rejected');
   const placed=all.filter(c=>c.stage==='placed');
   const fromCal=all.filter(c=>c.fromCal);
   const projFees=active.reduce((s,c)=>s+calcFee(c),0);
@@ -345,6 +371,21 @@ function renderFilterSelect(){
   const sel=document.getElementById('filter-client');const cur=sel.value;
   sel.innerHTML='<option value="">All clients</option>';
   getClients().forEach(cl=>{const o=document.createElement('option');o.value=cl;o.textContent=cl;if(cl===cur)o.selected=true;sel.appendChild(o);});
+}
+
+function renderClientsList(){
+  const list=document.getElementById('clients-list');
+  list.innerHTML='';
+  (STATE.clients||[]).forEach(cl=>{
+    const item=document.createElement('div');
+    item.className='client-item';
+    item.innerHTML=`<span class="client-item-name">${cl}</span><button class="client-item-btn">Remove</button>`;
+    item.querySelector('button').addEventListener('click',()=>{
+      STATE.clients=STATE.clients.filter(c=>c!==cl);
+      save();renderFilterSelect();renderClientsList();
+    });
+    list.appendChild(item);
+  });
 }
 
 document.querySelectorAll('.tab').forEach(t=>{
@@ -433,6 +474,24 @@ document.getElementById('ctx-email').addEventListener('click',()=>{const c=STATE
 document.getElementById('ctx-delete').addEventListener('click',()=>{const id=ctxId;hideCtx();if(confirm('Delete this candidate?'))deleteCandidate(id);});
 document.addEventListener('click',e=>{if(!document.getElementById('ctx-menu').contains(e.target))hideCtx();});
 
+document.getElementById('clients-btn').addEventListener('click',()=>{
+  renderClientsList();
+  document.getElementById('clients-modal-overlay').classList.add('open');
+  document.getElementById('new-client-input').focus();
+});
+document.getElementById('clients-cancel').addEventListener('click',()=>document.getElementById('clients-modal-overlay').classList.remove('open'));
+document.getElementById('add-client-btn').addEventListener('click',()=>{
+  const name=document.getElementById('new-client-input').value.trim();
+  if(!name)return;
+  if(!STATE.clients)STATE.clients=[];
+  if(!STATE.clients.includes(name)){
+    STATE.clients.push(name);
+    save();renderFilterSelect();renderClientsList();
+    document.getElementById('new-client-input').value='';
+  }
+});
+document.getElementById('new-client-input').addEventListener('keypress',e=>{if(e.key==='Enter')document.getElementById('add-client-btn').click();});
+
 document.getElementById('cal-btn').addEventListener('click',()=>{
   document.getElementById('cal-token').value=localStorage.getItem('cal_token')||'';
   document.getElementById('cal-log').style.display='none';
@@ -503,8 +562,9 @@ document.getElementById('btn-cancel').addEventListener('click',closeModal);
 document.getElementById('btn-save').addEventListener('click',saveModal);
 document.getElementById('btn-delete').addEventListener('click',()=>{if(editId){deleteCandidate(editId);closeModal();}});
 document.getElementById('modal-overlay').addEventListener('click',e=>{if(e.target===document.getElementById('modal-overlay'))closeModal();});
+document.getElementById('clients-modal-overlay').addEventListener('click',e=>{if(e.target===document.getElementById('clients-modal-overlay'))document.getElementById('clients-modal-overlay').classList.remove('open');});
 document.getElementById('cal-modal-overlay').addEventListener('click',e=>{if(e.target===document.getElementById('cal-modal-overlay'))document.getElementById('cal-modal-overlay').classList.remove('open');});
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();document.getElementById('cal-modal-overlay').classList.remove('open');hideCtx();}if(e.key==='Enter'&&document.getElementById('modal-overlay').classList.contains('open')&&document.activeElement.tagName!=='TEXTAREA'&&document.activeElement.tagName!=='BUTTON')saveModal();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();document.getElementById('clients-modal-overlay').classList.remove('open');document.getElementById('cal-modal-overlay').classList.remove('open');hideCtx();}if(e.key==='Enter'&&document.getElementById('modal-overlay').classList.contains('open')&&document.activeElement.tagName!=='TEXTAREA'&&document.activeElement.tagName!=='BUTTON')saveModal();});
 document.getElementById('search-input').addEventListener('input',e=>{searchVal=e.target.value;renderBoard();});
 document.getElementById('filter-client').addEventListener('change',e=>{filterClient=e.target.value;renderBoard();});
 
