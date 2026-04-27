@@ -50,7 +50,7 @@
   .s-val { font-size: 16px; font-weight: 500; color: var(--text-primary); }
 
   #board { display: flex; gap: 10px; padding: 12px; overflow-x: auto; overflow-y: hidden; flex: 1; }
-  .column { display: flex; flex-direction: column; min-width: 210px; max-width: 210px; background: var(--bg-secondary); border: 0.5px solid var(--border-light); border-radius: var(--radius-lg); overflow: hidden; }
+  .column { display: flex; flex-direction: column; min-width: 215px; max-width: 215px; background: var(--bg-secondary); border: 0.5px solid var(--border-light); border-radius: var(--radius-lg); overflow: hidden; }
   .col-header { display: flex; align-items: center; justify-content: space-between; padding: 8px 10px; border-bottom: 0.5px solid var(--border-light); flex-shrink: 0; }
   .col-title-wrap { display: flex; align-items: center; gap: 6px; }
   .col-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
@@ -58,11 +58,14 @@
   .col-count { font-size: 10px; color: var(--text-secondary); background: var(--bg-primary); border: 0.5px solid var(--border-light); border-radius: 10px; padding: 1px 5px; }
   .col-cards { flex: 1; overflow-y: auto; padding: 6px; display: flex; flex-direction: column; gap: 5px; min-height: 60px; }
   .col-cards.drag-over { background: var(--bg-info); }
+
   .card { background: var(--bg-primary); border: 0.5px solid var(--border-light); border-radius: var(--radius-md); padding: 9px 10px; cursor: grab; transition: border-color 0.15s; }
   .card:hover { border-color: var(--border-mid); }
   .card.dragging { opacity: 0.35; }
   .card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 4px; margin-bottom: 3px; }
-  .card-name { font-size: 12px; font-weight: 500; color: var(--text-primary); line-height: 1.3; }
+  .card-name { font-size: 12px; font-weight: 500; color: var(--text-primary); line-height: 1.3; text-decoration: none; }
+  .card-name.linked { color: var(--text-info); }
+  .card-name.linked:hover { text-decoration: underline; }
   .card-menu-btn { background: none; border: none; cursor: pointer; color: var(--text-secondary); font-size: 15px; line-height: 1; padding: 0 2px; flex-shrink: 0; }
   .card-menu-btn:hover { color: var(--text-primary); }
   .card-role { font-size: 10px; color: var(--text-secondary); margin-bottom: 5px; }
@@ -72,20 +75,18 @@
   .tag-hot { background: #FCEBEB; color: #A32D2D; }
   .tag-warm { background: #FAEEDA; color: #854F0B; }
   .tag-cold { background: var(--bg-secondary); color: var(--text-secondary); }
-  .tag-rejected { background: #F5E8E8; color: #8B4444; }
   .tag-cal { background: #EAF3DE; color: #3B6D11; font-size: 9px; }
   .card-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 6px; }
   .card-fee { font-size: 10px; font-weight: 500; color: var(--text-secondary); }
   .card-date { font-size: 10px; color: var(--text-secondary); }
-  .card-initials { width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 8px; font-weight: 500; background: var(--bg-info); color: var(--text-info); }
+  .card-initials { width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 8px; font-weight: 500; background: var(--bg-info); color: var(--text-info); flex-shrink: 0; }
   .add-card-btn { width: 100%; padding: 6px; font-size: 11px; color: var(--text-secondary); background: none; border: none; cursor: pointer; text-align: left; border-top: 0.5px solid var(--border-light); border-radius: 0 0 var(--radius-lg) var(--radius-lg); flex-shrink: 0; }
   .add-card-btn:hover { color: var(--text-primary); background: var(--bg-secondary); }
   .empty-col { font-size: 11px; color: var(--text-secondary); text-align: center; padding: 10px 0; }
 
-  /* Modal */
   .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 100; align-items: center; justify-content: center; }
   .overlay.open { display: flex; }
-  .modal { background: var(--bg-primary); border: 0.5px solid var(--border-mid); border-radius: var(--radius-lg); padding: 18px; width: 380px; max-width: 96vw; max-height: 88vh; overflow-y: auto; }
+  .modal { background: var(--bg-primary); border: 0.5px solid var(--border-mid); border-radius: var(--radius-lg); padding: 18px; width: 400px; max-width: 96vw; max-height: 88vh; overflow-y: auto; }
   .modal h3 { font-size: 14px; font-weight: 600; margin-bottom: 14px; color: var(--text-primary); }
   .tabs { display: flex; margin-bottom: 14px; border: 0.5px solid var(--border-light); border-radius: var(--radius-md); overflow: hidden; }
   .tab { flex: 1; padding: 6px; font-size: 12px; text-align: center; cursor: pointer; color: var(--text-secondary); background: var(--bg-secondary); border: none; font-family: var(--font); }
@@ -111,17 +112,31 @@
   .add-note-row input:focus { outline: none; }
   .add-note-row button { padding: 5px 10px; font-size: 11px; border: 0.5px solid var(--border-mid); border-radius: var(--radius-md); background: none; cursor: pointer; color: var(--text-primary); white-space: nowrap; font-family: var(--font); }
 
-  /* Context menu */
+  /* Multi-client pill input */
+  .client-tag-input-wrap { display: flex; flex-wrap: wrap; gap: 4px; padding: 5px 7px; border: 0.5px solid var(--border-light); border-radius: var(--radius-md); background: var(--bg-secondary); cursor: text; min-height: 34px; align-items: center; }
+  .client-tag-input-wrap:focus-within { border-color: var(--border-mid); }
+  .client-pill { display: flex; align-items: center; gap: 3px; background: var(--bg-info); color: var(--text-info); font-size: 11px; font-weight: 500; padding: 2px 6px; border-radius: 4px; white-space: nowrap; }
+  .client-pill-x { background: none; border: none; cursor: pointer; color: var(--text-info); font-size: 13px; line-height: 1; padding: 0; margin-left: 1px; opacity: 0.7; }
+  .client-pill-x:hover { opacity: 1; }
+  .client-tag-input { border: none; background: none; outline: none; font-size: 12px; color: var(--text-primary); font-family: var(--font); min-width: 80px; flex: 1; padding: 0; }
+  .field-relative { position: relative; }
+  .client-suggestions { position: absolute; background: var(--bg-primary); border: 0.5px solid var(--border-mid); border-radius: var(--radius-md); z-index: 300; min-width: 160px; left: 0; top: 100%; margin-top: 2px; box-shadow: 0 4px 12px rgba(0,0,0,0.12); overflow: hidden; }
+  .client-sug-item { padding: 7px 12px; font-size: 12px; cursor: pointer; color: var(--text-primary); }
+  .client-sug-item:hover { background: var(--bg-secondary); }
+
+  /* LinkedIn live link */
+  .linkedin-preview { font-size: 11px; margin-top: 4px; }
+  .linkedin-preview a { color: var(--text-info); text-decoration: none; }
+  .linkedin-preview a:hover { text-decoration: underline; }
+
   #ctx-menu { display: none; position: fixed; background: var(--bg-primary); border: 0.5px solid var(--border-mid); border-radius: var(--radius-md); z-index: 200; min-width: 130px; overflow: hidden; box-shadow: 0 4px 16px rgba(0,0,0,0.12); }
   #ctx-menu.open { display: block; }
   .ctx-item { padding: 7px 12px; font-size: 12px; cursor: pointer; color: var(--text-primary); }
   .ctx-item:hover { background: var(--bg-secondary); }
   .ctx-item.danger { color: #A32D2D; }
 
-  /* Clients modal extras */
   #cal-log { font-size: 11px; color: var(--text-secondary); background: var(--bg-secondary); border-radius: var(--radius-md); padding: 8px; min-height: 40px; max-height: 120px; overflow-y: auto; margin-bottom: 10px; display: none; white-space: pre-wrap; font-family: monospace; }
   #sync-status { font-size: 11px; color: var(--text-secondary); margin-bottom: 8px; min-height: 16px; }
-  
   .clients-list { display: flex; flex-direction: column; gap: 6px; max-height: 200px; overflow-y: auto; margin-bottom: 12px; }
   .client-item { display: flex; align-items: center; justify-content: space-between; padding: 8px 10px; background: var(--bg-secondary); border-radius: var(--radius-md); border: 0.5px solid var(--border-light); }
   .client-item-name { font-size: 12px; font-weight: 500; color: var(--text-primary); }
@@ -165,10 +180,20 @@
       <div class="field"><label>Name</label><input id="f-name" placeholder="First Last" /></div>
       <div class="field-row">
         <div class="field"><label>Role / Title</label><input id="f-role" placeholder="SRE" /></div>
-        <div class="field"><label>Client</label><input id="f-client" placeholder="Runlayer" /></div>
+        <div class="field field-relative" id="client-field-wrap">
+          <label>Clients</label>
+          <div class="client-tag-input-wrap" id="client-tag-wrap">
+            <input class="client-tag-input" id="client-tag-input" placeholder="Add client..." autocomplete="off" />
+          </div>
+          <div class="client-suggestions" id="client-suggestions" style="display:none"></div>
+        </div>
       </div>
       <div class="field"><label>Email</label><input id="f-email" type="email" placeholder="candidate@email.com" /></div>
-      <div class="field"><label>LinkedIn URL</label><input id="f-linkedin" placeholder="https://linkedin.com/in/..." /></div>
+      <div class="field">
+        <label>LinkedIn URL</label>
+        <input id="f-linkedin" placeholder="https://linkedin.com/in/..." />
+        <div class="linkedin-preview" id="linkedin-preview"></div>
+      </div>
       <div class="field-row">
         <div class="field"><label>Priority</label>
           <select id="f-priority">
@@ -225,9 +250,7 @@
       </div>
     </div>
     <div class="clients-list" id="clients-list"></div>
-    <div class="modal-btns">
-      <button class="btn-cancel" id="clients-cancel">Done</button>
-    </div>
+    <div class="modal-btns"><button class="btn-cancel" id="clients-cancel">Done</button></div>
   </div>
 </div>
 
@@ -235,7 +258,7 @@
 <div class="overlay" id="cal-modal-overlay">
   <div class="modal" style="width:360px">
     <h3>Calendly sync</h3>
-    <p style="font-size:12px;color:var(--text-secondary);margin-bottom:12px;line-height:1.5">Paste your Calendly Personal Access Token to pull recent bookings into the pipeline. Get it at calendly.com/integrations/api_webhooks</p>
+    <p style="font-size:12px;color:var(--text-secondary);margin-bottom:12px;line-height:1.5">Paste your Calendly Personal Access Token to pull recent bookings into the pipeline.</p>
     <div class="field"><label>Personal Access Token</label><input id="cal-token" type="password" placeholder="eyJ..." /></div>
     <div class="field"><label>Default stage for new bookings</label>
       <select id="cal-stage-default">
@@ -274,46 +297,63 @@ const STAGES=[
   {id:'rejected',label:'Rejected',color:'#8B4444'},
 ];
 
+function toArr(v){if(!v)return[];if(Array.isArray(v))return v;return v.split(',').map(s=>s.trim()).filter(Boolean);}
+
 const SEED=[
-  {id:'c1',name:'Marcus Webb',role:'Infra / SRE',client:'Runlayer',email:'',linkedin:'',stage:'screening',priority:'hot',notes:'Strong K8s background.',currentComp:160000,targetComp:190000,offerComp:0,feePct:20,fee:0,feeStatus:'projected',fromCal:false,date:'2025-04-10',activity:[{ts:'2025-04-10',text:'Added to pipeline'},{ts:'2025-04-11',text:'Scheduled screening call'}]},
-  {id:'c2',name:'Priya Sharma',role:'Platform Engineer',client:'Runlayer',email:'',linkedin:'',stage:'outreached',priority:'warm',notes:'Ex-Stripe infra.',currentComp:175000,targetComp:200000,offerComp:0,feePct:20,fee:0,feeStatus:'projected',fromCal:false,date:'2025-04-11',activity:[{ts:'2025-04-11',text:'Sent InMail'}]},
-  {id:'c3',name:'Devon Castillo',role:'Field Engineer',client:'Runlayer',email:'',linkedin:'',stage:'interview',priority:'hot',notes:'Final round next week.',currentComp:145000,targetComp:170000,offerComp:0,feePct:20,fee:0,feeStatus:'projected',fromCal:false,date:'2025-04-08',activity:[{ts:'2025-04-08',text:'Submitted to client'},{ts:'2025-04-10',text:'Passed screening'},{ts:'2025-04-13',text:'Final round scheduled'}]},
-  {id:'c4',name:'Leo Huang',role:'AI Engineer',client:'OpenClaw',email:'',linkedin:'',stage:'submitted',priority:'warm',notes:'Founder loved the background.',currentComp:180000,targetComp:210000,offerComp:0,feePct:20,fee:0,feeStatus:'projected',fromCal:false,date:'2025-04-09',activity:[{ts:'2025-04-09',text:'Submitted to OpenClaw founder'}]},
-  {id:'c5',name:'Nadia Flores',role:'Product Engineer',client:'Runlayer',email:'',linkedin:'',stage:'offer',priority:'hot',notes:'Offer out. $195k + equity.',currentComp:170000,targetComp:195000,offerComp:195000,feePct:20,fee:39000,feeStatus:'projected',fromCal:false,date:'2025-04-07',activity:[{ts:'2025-04-07',text:'Offer extended: $195k'}]},
+  {id:'c1',name:'Marcus Webb',role:'Infra / SRE',clients:['Runlayer'],email:'',linkedin:'',stage:'screening',priority:'hot',notes:'Strong K8s background.',currentComp:160000,targetComp:190000,offerComp:0,feePct:20,fee:0,feeStatus:'projected',fromCal:false,date:'2025-04-10',activity:[{ts:'2025-04-10',text:'Added to pipeline'},{ts:'2025-04-11',text:'Scheduled screening call'}]},
+  {id:'c2',name:'Priya Sharma',role:'Platform Engineer',clients:['Runlayer'],email:'',linkedin:'',stage:'outreached',priority:'warm',notes:'Ex-Stripe infra.',currentComp:175000,targetComp:200000,offerComp:0,feePct:20,fee:0,feeStatus:'projected',fromCal:false,date:'2025-04-11',activity:[{ts:'2025-04-11',text:'Sent InMail'}]},
+  {id:'c3',name:'Devon Castillo',role:'Field Engineer',clients:['Runlayer','OpenClaw'],email:'',linkedin:'',stage:'interview',priority:'hot',notes:'Being considered by two clients.',currentComp:145000,targetComp:170000,offerComp:0,feePct:20,fee:0,feeStatus:'projected',fromCal:false,date:'2025-04-08',activity:[{ts:'2025-04-08',text:'Submitted to Runlayer'},{ts:'2025-04-12',text:'Also submitted to OpenClaw'}]},
+  {id:'c4',name:'Leo Huang',role:'AI Engineer',clients:['OpenClaw'],email:'',linkedin:'https://linkedin.com/in/leohuang',stage:'submitted',priority:'warm',notes:'Founder loved the background.',currentComp:180000,targetComp:210000,offerComp:0,feePct:20,fee:0,feeStatus:'projected',fromCal:false,date:'2025-04-09',activity:[{ts:'2025-04-09',text:'Submitted to OpenClaw founder'}]},
+  {id:'c5',name:'Nadia Flores',role:'Product Engineer',clients:['Runlayer'],email:'',linkedin:'',stage:'offer',priority:'hot',notes:'Offer out. $195k + equity.',currentComp:170000,targetComp:195000,offerComp:195000,feePct:20,fee:39000,feeStatus:'projected',fromCal:false,date:'2025-04-07',activity:[{ts:'2025-04-07',text:'Offer extended: $195k'}]},
 ];
 
 let STATE={candidates:[],clients:[]};
 let dragId=null,editId=null,ctxId=null,searchVal='',filterClient='';
+let modalClients=[];
 
-function load(){try{const r=localStorage.getItem('ats_full_v1');if(r)STATE=JSON.parse(r);else{STATE.candidates=SEED;STATE.clients=[];}}catch{STATE.candidates=SEED;STATE.clients=[];}}
-function save(){try{localStorage.setItem('ats_full_v1',JSON.stringify(STATE));}catch{}}
+function load(){
+  try{
+    const r=localStorage.getItem('ats_full_v2');
+    if(r){
+      STATE=JSON.parse(r);
+      STATE.candidates.forEach(c=>{
+        if(!c.clients){c.clients=toArr(c.client||'');delete c.client;}
+        else{c.clients=toArr(c.clients);}
+      });
+    } else {STATE.candidates=SEED;STATE.clients=[];}
+    if(!STATE.clients)STATE.clients=[];
+  }catch{STATE.candidates=SEED;STATE.clients=[];}
+}
+function save(){try{localStorage.setItem('ats_full_v2',JSON.stringify(STATE));}catch{}}
 function uid(){return 'c'+Date.now()+Math.random().toString(36).slice(2,5);}
 function initials(n){return(n||'?').split(' ').map(p=>p[0]||'').join('').slice(0,2).toUpperCase();}
 function fmt(d){if(!d)return'';const dt=new Date(d);return(dt.getMonth()+1)+'/'+dt.getDate();}
 function fmtMoney(v){if(!v||isNaN(v))return'';return'$'+Math.round(v).toLocaleString();}
 function calcFee(c){if(c.fee&&c.fee>0)return c.fee;const base=c.offerComp||c.targetComp||0;const pct=(c.feePct||20)/100;return Math.round(base*pct);}
-function getClients(){const from_data=[...new Set(STATE.candidates.map(c=>c.client).filter(Boolean))];const all=[...new Set([...from_data,...(STATE.clients||[])])];return all.sort();}
+
+function getAllClients(){
+  const fromC=STATE.candidates.flatMap(c=>toArr(c.clients));
+  return[...new Set([...fromC,...(STATE.clients||[])])].filter(Boolean).sort();
+}
 
 function updateSummary(){
   const all=STATE.candidates;
   const active=all.filter(c=>c.stage!=='placed'&&c.stage!=='rejected');
   const placed=all.filter(c=>c.stage==='placed');
   const fromCal=all.filter(c=>c.fromCal);
-  const projFees=active.reduce((s,c)=>s+calcFee(c),0);
-  const placedFees=placed.reduce((s,c)=>s+calcFee(c),0);
   document.getElementById('s-total').textContent=all.length;
   document.getElementById('s-active').textContent=active.length;
   document.getElementById('s-placed').textContent=placed.length;
-  document.getElementById('s-fees').textContent=projFees>0?fmtMoney(projFees):'$0';
-  document.getElementById('s-placed-fees').textContent=placedFees>0?fmtMoney(placedFees):'$0';
+  document.getElementById('s-fees').textContent=fmtMoney(active.reduce((s,c)=>s+calcFee(c),0))||'$0';
+  document.getElementById('s-placed-fees').textContent=fmtMoney(placed.reduce((s,c)=>s+calcFee(c),0))||'$0';
   document.getElementById('s-cal').textContent=fromCal.length;
 }
 
 function filteredFor(sid){
   return STATE.candidates.filter(c=>{
     if(c.stage!==sid)return false;
-    if(filterClient&&c.client!==filterClient)return false;
-    if(searchVal){const q=searchVal.toLowerCase();return(c.name||'').toLowerCase().includes(q)||(c.role||'').toLowerCase().includes(q)||(c.client||'').toLowerCase().includes(q)||(c.notes||'').toLowerCase().includes(q);}
+    if(filterClient&&!toArr(c.clients).includes(filterClient))return false;
+    if(searchVal){const q=searchVal.toLowerCase();return(c.name||'').toLowerCase().includes(q)||(c.role||'').toLowerCase().includes(q)||toArr(c.clients).join(' ').toLowerCase().includes(q)||(c.notes||'').toLowerCase().includes(q);}
     return true;
   });
 }
@@ -324,14 +364,16 @@ function makeCard(c){
   const priCls=c.priority==='hot'?'tag-hot':c.priority==='cold'?'tag-cold':'tag-warm';
   const priLbl=c.priority==='hot'?'Hot':c.priority==='cold'?'Cold':'Warm';
   const fee=calcFee(c);
+  const clients=toArr(c.clients);
+  const hasLI=c.linkedin&&c.linkedin.trim();
+  const nameEl=hasLI
+    ?`<a class="card-name linked" href="${c.linkedin}" target="_blank" rel="noopener" title="Open LinkedIn">${c.name||'Unnamed'}</a>`
+    :`<span class="card-name">${c.name||'Unnamed'}</span>`;
   div.innerHTML=`
-    <div class="card-top">
-      <span class="card-name">${c.name||'Unnamed'}</span>
-      <button class="card-menu-btn" data-id="${c.id}">···</button>
-    </div>
+    <div class="card-top">${nameEl}<button class="card-menu-btn" data-id="${c.id}">···</button></div>
     ${c.role?`<div class="card-role">${c.role}</div>`:''}
     <div class="card-tags">
-      ${c.client?`<span class="tag tag-client">${c.client}</span>`:''}
+      ${clients.map(cl=>`<span class="tag tag-client">${cl}</span>`).join('')}
       <span class="tag ${priCls}">${priLbl}</span>
       ${c.fromCal?`<span class="tag tag-cal">Calendly</span>`:''}
     </div>
@@ -341,7 +383,7 @@ function makeCard(c){
     </div>`;
   div.addEventListener('dragstart',()=>{dragId=c.id;setTimeout(()=>div.classList.add('dragging'),0);});
   div.addEventListener('dragend',()=>{dragId=null;div.classList.remove('dragging');});
-  div.addEventListener('dblclick',()=>openModal(c.id));
+  div.addEventListener('dblclick',e=>{if(e.target.tagName==='A')return;openModal(c.id);});
   div.querySelector('.card-menu-btn').addEventListener('click',e=>{e.stopPropagation();showCtx(c.id,e.clientX,e.clientY);});
   return div;
 }
@@ -370,24 +412,58 @@ function renderBoard(){
 function renderFilterSelect(){
   const sel=document.getElementById('filter-client');const cur=sel.value;
   sel.innerHTML='<option value="">All clients</option>';
-  getClients().forEach(cl=>{const o=document.createElement('option');o.value=cl;o.textContent=cl;if(cl===cur)o.selected=true;sel.appendChild(o);});
+  getAllClients().forEach(cl=>{const o=document.createElement('option');o.value=cl;o.textContent=cl;if(cl===cur)o.selected=true;sel.appendChild(o);});
 }
 
-function renderClientsList(){
-  const list=document.getElementById('clients-list');
-  list.innerHTML='';
-  (STATE.clients||[]).forEach(cl=>{
-    const item=document.createElement('div');
-    item.className='client-item';
-    item.innerHTML=`<span class="client-item-name">${cl}</span><button class="client-item-btn">Remove</button>`;
-    item.querySelector('button').addEventListener('click',()=>{
-      STATE.clients=STATE.clients.filter(c=>c!==cl);
-      save();renderFilterSelect();renderClientsList();
-    });
-    list.appendChild(item);
+/* Multi-client pills */
+function renderModalClientPills(){
+  const wrap=document.getElementById('client-tag-wrap');
+  wrap.querySelectorAll('.client-pill').forEach(p=>p.remove());
+  const input=document.getElementById('client-tag-input');
+  modalClients.forEach(cl=>{
+    const pill=document.createElement('div');pill.className='client-pill';
+    pill.innerHTML=`${cl}<button class="client-pill-x" tabindex="-1">×</button>`;
+    pill.querySelector('button').addEventListener('click',()=>{modalClients=modalClients.filter(c=>c!==cl);renderModalClientPills();});
+    wrap.insertBefore(pill,input);
   });
 }
 
+function addModalClient(name){
+  const n=name.trim();if(!n||modalClients.includes(n))return;
+  modalClients.push(n);
+  if(!STATE.clients.includes(n)){STATE.clients.push(n);save();}
+  renderModalClientPills();
+  document.getElementById('client-tag-input').value='';
+  hideSuggestions();
+}
+
+function showSuggestions(q){
+  const box=document.getElementById('client-suggestions');
+  const all=getAllClients().filter(c=>!modalClients.includes(c)&&(!q||c.toLowerCase().includes(q.toLowerCase())));
+  if(!all.length){box.style.display='none';return;}
+  box.innerHTML='';
+  all.forEach(cl=>{const d=document.createElement('div');d.className='client-sug-item';d.textContent=cl;d.addEventListener('mousedown',e=>{e.preventDefault();addModalClient(cl);});box.appendChild(d);});
+  box.style.display='block';
+}
+function hideSuggestions(){document.getElementById('client-suggestions').style.display='none';}
+
+const cti=document.getElementById('client-tag-input');
+cti.addEventListener('input',e=>showSuggestions(e.target.value));
+cti.addEventListener('focus',e=>showSuggestions(e.target.value));
+cti.addEventListener('blur',()=>setTimeout(hideSuggestions,150));
+cti.addEventListener('keydown',e=>{
+  if(e.key==='Enter'||e.key===','||e.key==='\t'){e.preventDefault();const v=cti.value.trim().replace(/,$/,'');if(v)addModalClient(v);}
+  if(e.key==='Backspace'&&!cti.value&&modalClients.length){modalClients.pop();renderModalClientPills();}
+});
+document.getElementById('client-tag-wrap').addEventListener('click',()=>cti.focus());
+
+/* LinkedIn live preview */
+document.getElementById('f-linkedin').addEventListener('input',e=>{
+  const v=e.target.value.trim();
+  document.getElementById('linkedin-preview').innerHTML=v?`<a href="${v}" target="_blank" rel="noopener">↗ Open LinkedIn</a>`:'';
+});
+
+/* Tabs */
 document.querySelectorAll('.tab').forEach(t=>{
   t.addEventListener('click',()=>{
     document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
@@ -416,9 +492,9 @@ function openModal(id,defaultStage){
     document.getElementById('modal-title').textContent='Edit candidate';
     document.getElementById('f-name').value=c.name||'';
     document.getElementById('f-role').value=c.role||'';
-    document.getElementById('f-client').value=c.client||'';
     document.getElementById('f-email').value=c.email||'';
     document.getElementById('f-linkedin').value=c.linkedin||'';
+    document.getElementById('linkedin-preview').innerHTML=c.linkedin?`<a href="${c.linkedin}" target="_blank" rel="noopener">↗ Open LinkedIn</a>`:'';
     document.getElementById('f-priority').value=c.priority||'warm';
     document.getElementById('f-notes').value=c.notes||'';
     document.getElementById('f-current-comp').value=c.currentComp||'';
@@ -427,14 +503,19 @@ function openModal(id,defaultStage){
     document.getElementById('f-fee-pct').value=c.feePct||20;
     document.getElementById('f-fee').value=c.fee||'';
     document.getElementById('f-fee-status').value=c.feeStatus||'projected';
+    modalClients=toArr(c.clients);renderModalClientPills();
+    document.getElementById('client-tag-input').value='';
     populateStageSelect(c.stage);renderActivity(c);del.style.display='block';
   } else {
     document.getElementById('modal-title').textContent='Add candidate';
-    ['f-name','f-role','f-client','f-email','f-linkedin','f-notes','f-current-comp','f-target-comp','f-offer-comp','f-fee'].forEach(id=>document.getElementById(id).value='');
+    ['f-name','f-role','f-email','f-linkedin','f-notes','f-current-comp','f-target-comp','f-offer-comp','f-fee'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('linkedin-preview').innerHTML='';
     document.getElementById('f-priority').value='warm';
     document.getElementById('f-fee-pct').value=20;
     document.getElementById('f-fee-status').value='projected';
     document.getElementById('activity-log').innerHTML='';
+    document.getElementById('client-tag-input').value='';
+    modalClients=[];renderModalClientPills();
     populateStageSelect(defaultStage||'sourced');del.style.display='none';
   }
   document.getElementById('modal-overlay').classList.add('open');
@@ -446,7 +527,7 @@ function closeModal(){document.getElementById('modal-overlay').classList.remove(
 function saveModal(){
   const name=document.getElementById('f-name').value.trim();
   if(!name){document.getElementById('f-name').focus();return;}
-  const data={name,role:document.getElementById('f-role').value.trim(),client:document.getElementById('f-client').value.trim(),email:document.getElementById('f-email').value.trim(),linkedin:document.getElementById('f-linkedin').value.trim(),priority:document.getElementById('f-priority').value,stage:document.getElementById('f-stage').value,notes:document.getElementById('f-notes').value.trim(),currentComp:parseFloat(document.getElementById('f-current-comp').value)||0,targetComp:parseFloat(document.getElementById('f-target-comp').value)||0,offerComp:parseFloat(document.getElementById('f-offer-comp').value)||0,feePct:parseFloat(document.getElementById('f-fee-pct').value)||20,fee:parseFloat(document.getElementById('f-fee').value)||0,feeStatus:document.getElementById('f-fee-status').value};
+  const data={name,role:document.getElementById('f-role').value.trim(),clients:modalClients.slice(),email:document.getElementById('f-email').value.trim(),linkedin:document.getElementById('f-linkedin').value.trim(),priority:document.getElementById('f-priority').value,stage:document.getElementById('f-stage').value,notes:document.getElementById('f-notes').value.trim(),currentComp:parseFloat(document.getElementById('f-current-comp').value)||0,targetComp:parseFloat(document.getElementById('f-target-comp').value)||0,offerComp:parseFloat(document.getElementById('f-offer-comp').value)||0,feePct:parseFloat(document.getElementById('f-fee-pct').value)||20,fee:parseFloat(document.getElementById('f-fee').value)||0,feeStatus:document.getElementById('f-fee-status').value};
   if(editId){
     const i=STATE.candidates.findIndex(x=>x.id===editId);
     if(i>=0){const prev=STATE.candidates[i];STATE.candidates[i]={...prev,...data};if(prev.stage!==data.stage){STATE.candidates[i].activity=STATE.candidates[i].activity||[];STATE.candidates[i].activity.push({ts:new Date().toISOString().slice(0,10),text:`Stage updated to ${STAGES.find(s=>s.id===data.stage)?.label}`});}}
@@ -474,84 +555,75 @@ document.getElementById('ctx-email').addEventListener('click',()=>{const c=STATE
 document.getElementById('ctx-delete').addEventListener('click',()=>{const id=ctxId;hideCtx();if(confirm('Delete this candidate?'))deleteCandidate(id);});
 document.addEventListener('click',e=>{if(!document.getElementById('ctx-menu').contains(e.target))hideCtx();});
 
-document.getElementById('clients-btn').addEventListener('click',()=>{
-  renderClientsList();
-  document.getElementById('clients-modal-overlay').classList.add('open');
-  document.getElementById('new-client-input').focus();
-});
+/* Clients modal */
+function renderClientsList(){
+  const list=document.getElementById('clients-list');list.innerHTML='';
+  (STATE.clients||[]).forEach(cl=>{
+    const item=document.createElement('div');item.className='client-item';
+    item.innerHTML=`<span class="client-item-name">${cl}</span><button class="client-item-btn">Remove</button>`;
+    item.querySelector('button').addEventListener('click',()=>{STATE.clients=STATE.clients.filter(c=>c!==cl);save();renderFilterSelect();renderClientsList();});
+    list.appendChild(item);
+  });
+}
+document.getElementById('clients-btn').addEventListener('click',()=>{renderClientsList();document.getElementById('clients-modal-overlay').classList.add('open');document.getElementById('new-client-input').focus();});
 document.getElementById('clients-cancel').addEventListener('click',()=>document.getElementById('clients-modal-overlay').classList.remove('open'));
 document.getElementById('add-client-btn').addEventListener('click',()=>{
-  const name=document.getElementById('new-client-input').value.trim();
-  if(!name)return;
+  const name=document.getElementById('new-client-input').value.trim();if(!name)return;
   if(!STATE.clients)STATE.clients=[];
-  if(!STATE.clients.includes(name)){
-    STATE.clients.push(name);
-    save();renderFilterSelect();renderClientsList();
-    document.getElementById('new-client-input').value='';
-  }
+  if(!STATE.clients.includes(name)){STATE.clients.push(name);save();renderFilterSelect();renderClientsList();}
+  document.getElementById('new-client-input').value='';
 });
 document.getElementById('new-client-input').addEventListener('keypress',e=>{if(e.key==='Enter')document.getElementById('add-client-btn').click();});
 
+/* Calendly sync */
 document.getElementById('cal-btn').addEventListener('click',()=>{
   document.getElementById('cal-token').value=localStorage.getItem('cal_token')||'';
-  document.getElementById('cal-log').style.display='none';
-  document.getElementById('cal-log').textContent='';
-  document.getElementById('sync-status').textContent='';
+  document.getElementById('cal-log').style.display='none';document.getElementById('cal-log').textContent='';document.getElementById('sync-status').textContent='';
   document.getElementById('cal-modal-overlay').classList.add('open');
 });
 document.getElementById('cal-cancel').addEventListener('click',()=>document.getElementById('cal-modal-overlay').classList.remove('open'));
-
 document.getElementById('cal-sync-btn').addEventListener('click',async()=>{
   const token=document.getElementById('cal-token').value.trim();
   if(!token){document.getElementById('sync-status').textContent='Please enter your token.';return;}
   localStorage.setItem('cal_token',token);
   const defaultStage=document.getElementById('cal-stage-default').value;
-  const statusEl=document.getElementById('sync-status');
-  const logEl=document.getElementById('cal-log');
+  const statusEl=document.getElementById('sync-status'),logEl=document.getElementById('cal-log');
   statusEl.textContent='Connecting to Calendly...';logEl.style.display='block';logEl.textContent='';
   const btn=document.getElementById('cal-sync-btn');btn.textContent='Syncing...';btn.disabled=true;
-  try {
-    const meRes=await fetch('https://api.calendly.com/users/me',{headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'}});
+  try{
+    const meRes=await fetch('https://api.calendly.com/users/me',{headers:{Authorization:'Bearer '+token}});
     if(!meRes.ok){const e=await meRes.json();throw new Error(e.message||'Auth failed');}
-    const me=await meRes.json();
-    const userUri=me.resource.uri;
+    const me=await meRes.json();const userUri=me.resource.uri;
     logEl.textContent+='Connected as '+me.resource.name+'\n';statusEl.textContent='Fetching events...';
     const since=new Date(Date.now()-30*24*60*60*1000).toISOString();
     const evRes=await fetch(`https://api.calendly.com/scheduled_events?user=${encodeURIComponent(userUri)}&count=100&min_start_time=${since}&status=active`,{headers:{Authorization:'Bearer '+token}});
     if(!evRes.ok)throw new Error('Failed to fetch events');
-    const evData=await evRes.json();
-    const events=evData.collection||[];
+    const events=(await evRes.json()).collection||[];
     logEl.textContent+=`Found ${events.length} events in last 30 days\n`;
     let added=0,skipped=0;
     for(const ev of events){
       try{
-        const evId=ev.uri.split('/').pop();
-        const invRes=await fetch(`https://api.calendly.com/scheduled_events/${evId}/invitees?count=100`,{headers:{Authorization:'Bearer '+token}});
+        const invRes=await fetch(`https://api.calendly.com/scheduled_events/${ev.uri.split('/').pop()}/invitees?count=100`,{headers:{Authorization:'Bearer '+token}});
         if(!invRes.ok)continue;
-        const invData=await invRes.json();
-        for(const inv of(invData.collection||[])){
+        for(const inv of((await invRes.json()).collection||[])){
           const email=inv.email||'';const name=inv.name||email||'Unknown';
           if(!email)continue;
-          const exists=STATE.candidates.find(c=>c.email&&c.email.toLowerCase()===email.toLowerCase());
-          if(exists){logEl.textContent+=`Skipped (exists): ${name}\n`;skipped++;continue;}
-          const evName=ev.name||'Meeting';
-          const eventDate=ev.start_time?ev.start_time.split('T')[0]:new Date().toISOString().slice(0,10);
-          STATE.candidates.push({id:uid(),name,email,role:'',client:'',linkedin:'',stage:defaultStage,priority:'warm',notes:`Booked: ${evName} on ${eventDate}`,currentComp:0,targetComp:0,offerComp:0,feePct:20,fee:0,feeStatus:'projected',fromCal:true,date:eventDate,activity:[{ts:eventDate,text:`Auto-imported from Calendly — ${evName}`}]});
+          if(STATE.candidates.find(c=>c.email&&c.email.toLowerCase()===email.toLowerCase())){logEl.textContent+=`Skipped: ${name}\n`;skipped++;continue;}
+          const evName=ev.name||'Meeting';const eventDate=ev.start_time?ev.start_time.split('T')[0]:new Date().toISOString().slice(0,10);
+          STATE.candidates.push({id:uid(),name,email,role:'',clients:[],linkedin:'',stage:defaultStage,priority:'warm',notes:`Booked: ${evName} on ${eventDate}`,currentComp:0,targetComp:0,offerComp:0,feePct:20,fee:0,feeStatus:'projected',fromCal:true,date:eventDate,activity:[{ts:eventDate,text:`Auto-imported from Calendly — ${evName}`}]});
           logEl.textContent+=`Added: ${name} (${email})\n`;added++;
         }
-      }catch(invErr){
-        logEl.textContent+=`Error processing event: ${invErr.message}\n`;
-      }
+      }catch(err){logEl.textContent+=`Error: ${err.message}\n`;}
     }
-    save();renderFilterSelect();renderBoard();
-    statusEl.textContent=`✓ Done — ${added} added, ${skipped} skipped`;
-  } catch(err){statusEl.textContent='✗ Error: '+err.message;logEl.textContent+='\nFailed: '+err.message;}
+    save();renderFilterSelect();renderBoard();statusEl.textContent=`✓ Done — ${added} added, ${skipped} skipped`;
+  }catch(err){statusEl.textContent='✗ Error: '+err.message;}
   btn.textContent='Sync now';btn.disabled=false;
 });
 
+/* CSV export */
 document.getElementById('export-btn').addEventListener('click',()=>{
-  const headers=['Name','Role','Client','Email','LinkedIn','Stage','Priority','Current Comp','Target Comp','Offer Comp','Fee %','Est Fee','Fee Status','From Calendly','Date','Notes'];
-  const rows=STATE.candidates.map(c=>[c.name,c.role,c.client,c.email,c.linkedin,STAGES.find(s=>s.id===c.stage)?.label||c.stage,c.priority,c.currentComp,c.targetComp,c.offerComp,c.feePct,calcFee(c),c.feeStatus,c.fromCal?'Yes':'No',c.date,c.notes].map(v=>`"${String(v||'').replace(/"/g,'""')}"`).join(','));
+  const headers=['Name','Role','Clients','Email','LinkedIn','Stage','Priority','Current Comp','Target Comp','Offer Comp','Fee %','Est Fee','Fee Status','From Calendly','Date','Notes'];
+  const rows=STATE.candidates.map(c=>[c.name,c.role,toArr(c.clients).join('; '),c.email,c.linkedin,STAGES.find(s=>s.id===c.stage)?.label||c.stage,c.priority,c.currentComp,c.targetComp,c.offerComp,c.feePct,calcFee(c),c.feeStatus,c.fromCal?'Yes':'No',c.date,c.notes].map(v=>`"${String(v||'').replace(/"/g,'""')}"`).join(','));
   const csv=[headers.join(','),...rows].join('\n');
   const blob=new Blob([csv],{type:'text/csv'});const url=URL.createObjectURL(blob);
   const a=document.createElement('a');a.href=url;a.download='pipeline_'+new Date().toISOString().slice(0,10)+'.csv';a.click();URL.revokeObjectURL(url);
@@ -564,7 +636,10 @@ document.getElementById('btn-delete').addEventListener('click',()=>{if(editId){d
 document.getElementById('modal-overlay').addEventListener('click',e=>{if(e.target===document.getElementById('modal-overlay'))closeModal();});
 document.getElementById('clients-modal-overlay').addEventListener('click',e=>{if(e.target===document.getElementById('clients-modal-overlay'))document.getElementById('clients-modal-overlay').classList.remove('open');});
 document.getElementById('cal-modal-overlay').addEventListener('click',e=>{if(e.target===document.getElementById('cal-modal-overlay'))document.getElementById('cal-modal-overlay').classList.remove('open');});
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();document.getElementById('clients-modal-overlay').classList.remove('open');document.getElementById('cal-modal-overlay').classList.remove('open');hideCtx();}if(e.key==='Enter'&&document.getElementById('modal-overlay').classList.contains('open')&&document.activeElement.tagName!=='TEXTAREA'&&document.activeElement.tagName!=='BUTTON')saveModal();});
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){closeModal();document.getElementById('clients-modal-overlay').classList.remove('open');document.getElementById('cal-modal-overlay').classList.remove('open');hideCtx();}
+  if(e.key==='Enter'&&document.getElementById('modal-overlay').classList.contains('open')&&document.activeElement.tagName!=='TEXTAREA'&&document.activeElement.tagName!=='BUTTON'&&document.activeElement.id!=='client-tag-input')saveModal();
+});
 document.getElementById('search-input').addEventListener('input',e=>{searchVal=e.target.value;renderBoard();});
 document.getElementById('filter-client').addEventListener('change',e=>{filterClient=e.target.value;renderBoard();});
 
